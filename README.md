@@ -70,3 +70,11 @@ symfony server:start
 ``` 
 
 
+## Usage
+
+Open the browser and navigate to these routes
+
+| Route | Address | 
+| ---- | ---- |
+| Ticket Validator | http://localhost:8000/ |
+| Admin | http://localhost:8000/admin |
