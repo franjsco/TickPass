@@ -1,0 +1,7 @@
+{% set filename = 'PASS_' ~ entity.instance.getSerial() ~ '.pdf' %}
+{% set action_url = ea_url().setAction('downloadPass').generateUrl()  %}
+
+
+<a href="{{ action_url }}">{{filename}}</a>
+
+

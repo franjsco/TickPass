@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TickPass{% endblock %}
+
+{% block body %}
+<style>
+    .wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .wrapper code { background: #F5F5F5; padding: 2px 6px; }
+
+    body {
+        background-color: #f8fafc;
+    }
+
+    .container {
+        display: flex;
+        background-color: white;
+        border: 2px solid #808080;
+        padding: 10px;
+        border-radius: 10px 32px 32px 10px;  
+        
+    }
+
+    .item {
+        margin: 5px;
+    }
+
+    .title {
+        font-weight: bold;
+    }
+
+    .main-title {
+        color: transparent;
+        background: #666666;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        background-clip: text;
+        text-shadow: 0px 3px 3px rgba(255,255,255,0.5);
+        font-size: 3.5em;
+        margin: 8px;
+    }
+
+    .information-box {
+        min-width: 60%;
+        color: #585e66;
+        padding: 10px;
+        background-color: white;
+        border-radius: 1%;
+    }
+
+    #reader {
+        width: 20%;
+        border: 0px !important;
+        background-color: white;
+        color: #585e66;
+    }
+
+    .footer {
+        text-align: center;
+        color:#5a5a5a;
+        margin: 10px;
+        font-size: 0.9em;
+    }
+</style>
+
+<div class="wrapper">
+    <h1 class="main-title">TickPass</h1>
+
+    <div class="container">
+        <div class="item" style="width: 300px" id="reader"></div>
+
+        <div id="box" class="item information-box">
+            <p><span >Serial</span>: <span class="title" id="ticket_serial"></span></p>
+            <p>Status: <span class="title" id="ticket_status"></span></p>
+            <p>Type: <span class="title" id="ticket_typology"></span></p>
+            <p>Note: <span class="title" id="ticket_note"></span></p>
+            <p>Generation date: <span class="title" id="generation_date"></span></p>
+            <p>Validation date: <span class="title" id="validation_date"></span></p>
+            <p>Deactivation date: <span class="title" id="deactivation_date"></span></p>
+        </div>
+    </div>
+
+    <div class="footer">
+        TickPass by Francesco Esposito (@franjsco)
+    </div>
+    
+</div>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    window.addEventListener("DOMContentLoaded", function() {
+        async function fetchTicket(data) {
+            const response = await fetch('{{path('app_ticket_validator_check')}}', {
+            method: 'POST',
+            body: JSON.stringify(data)
+            });
+
+            const ticket = await response.json();
+
+            return ticket;
+        }
+
+
+        function onScanSuccess(decodedText, decodedResult) {     
+            const data = {'serial': decodedText}
+
+            fetchTicket(data).then((ticket) => {
+                console.log(ticket);
+                document.getElementById('box').style.visibility = 'visible'
+                
+                const color = ticket.status == 'valid' ? '#D9EAD3'
+                    : ticket.status == 'validated' ? '#FFF2CC'
+                    : '#F4CCCC';
+
+                document.getElementById('box').style.backgroundColor = color;
+
+                document.getElementById('ticket_serial').innerText = ticket.serial;
+                document.getElementById('ticket_status').innerText = ticket.status;
+                document.getElementById('ticket_typology').innerText = ticket.typology.name;
+                document.getElementById('ticket_note').innerText = ticket.note;
+                document.getElementById('generation_date').innerText = ticket.generationDate;
+                document.getElementById('validation_date').innerText = ticket.validationDate;
+                document.getElementById('deactivation_date').innerText = ticket.deactivationDate;
+            });
+
+            html5QrcodeScanner.pause(true);
+
+            setTimeout(() => {
+                html5QrcodeScanner.resume()
+            }, 2000);
+        }
+
+        function onScanFailure(error) {
+            console.warn(`Code scan error = ${error}`);
+        }
+
+        
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: {width: 250, height: 250} },
+            /* verbose= */ false
+        );
+        
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);    
+    }, false);
+</script>
+{% endblock %}
