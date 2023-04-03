@@ -34,7 +34,7 @@ TickPass is a web application for managing tickets and admissions with QR Code p
 
 **Server:** PHP 8, Symfony 5
 
-**Tools:** Docker, Symfony CLI
+**Tools:** Docker, Symfony CLI, composer
 
 ## Development
 
@@ -53,8 +53,8 @@ Install dependencies
 composer install
 ```
 
-Configure .env (DATABASE_URL)
-```
+Configure .env
+```bash
 DATABASE_URL
 ```
 
@@ -66,7 +66,7 @@ docker compose up -d
 Start development server
 
 ```bash
-  symfony server:start 
+symfony server:start 
 ``` 
 
 
