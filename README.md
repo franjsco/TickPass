@@ -58,6 +58,12 @@ Configure .env
 DATABASE_URL
 ```
 
+Create database and launch migrations (only the first time)
+```bash
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+```
+
 Start docker containers
 ```bash
 docker compose up -d
